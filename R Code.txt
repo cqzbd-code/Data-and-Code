@@ -1,0 +1,548 @@
+######### CODE ##############
+#############################
+# 1. OLS for Table 2.
+
+redline <- read.csv("<INSERT PATH>")
+
+redline$holc_grade <- as.factor(redline$holc_grade)
+
+model_all <- lm(diabetes ~ relevel(holc_grade, ref="A") +
+                pct_nonwhite + pct_black + pct_foreign_white +
+                median_h_value + pct_college_above + pct_unempl + 
+                pct_renter + pop_dens +
+                Region_Northeast + Region_South + Region_West, 
+                data = redline)
+
+summary(model_all)
+
+# Print coefficient and confidence interval
+coefficientB <- coef(model_all)["relevel(holc_grade, ref = \"A\")B"]
+ciB <- confint(model_all, "relevel(holc_grade, ref = \"A\")B")
+coefficientC <- coef(model_all)["relevel(holc_grade, ref = \"A\")C"]
+ciC <- confint(model_all, "relevel(holc_grade, ref = \"A\")C")
+coefficientD <- coef(model_all)["relevel(holc_grade, ref = \"A\")D"]
+ciD <- confint(model_all, "relevel(holc_grade, ref = \"A\")D")
+print(paste(round(coefficientB, digits = 2), 
+            " (", round(ciB[1], digits = 2), 
+            ", ", round(ciB[2], digits = 2), ")", sep = ""))
+print(paste(round(coefficientC, digits = 2), 
+            " (", round(ciC[1], digits = 2), 
+            ", ", round(ciC[2], digits = 2), ")", sep = ""))
+print(paste(round(coefficientD, digits = 2), 
+            " (", round(ciD[1], digits = 2), 
+            ", ", round(ciD[2], digits = 2), ")", sep = ""))
+
+#############################
+# 2. OLS for Table 3. 
+# Replace obesity with diabetes or bphigh for other two.
+
+# 2.1 For Grade A and B; Obesity
+df_filtered <- redline[redline$holc_grade %in% c("B", "A"), ]
+df_filtered$if_lower_grade <- ifelse(df_filtered$holc_grade == "B", 1, 0)
+
+print(nrow(df_filtered))
+
+# Crude model
+model_ori <- lm(obesity ~ if_lower_grade, data = df_filtered)
+
+model_data <- model.frame(model_ori)
+lower_grade_rows_in_model <- model_data[model_data$if_lower_grade == 1, ]
+print(paste("Total number of rows: ", nobs(model_ori)))
+
+coefficient <- coef(model_ori)["if_lower_grade"]
+ci <- confint(model_ori, "if_lower_grade")
+print(paste(round(coefficient, digits = 2), 
+            " (", round(ci[1], digits = 2), 
+            ", ", round(ci[2], digits = 2), ")", sep = ""))
+
+# Model controlling for regions
+model_ori <- lm(obesity ~ if_lower_grade + 
+                  Region_Northeast + Region_South + Region_West,
+                data = df_filtered)
+
+coefficient <- coef(model_ori)["if_lower_grade"]
+ci <- confint(model_ori, "if_lower_grade")
+print(paste(round(coefficient, digits = 2), 
+            " (", round(ci[1], digits = 2), 
+            ", ", round(ci[2], digits = 2), ")", sep = ""))
+
+# Model controlling for regions + SES 
+model_ori <- lm(obesity ~ if_lower_grade + 
+                  pct_nonwhite + pct_black + pct_foreign_white + 
+                  median_h_value + pct_college_above + pct_unempl + 
+                  pct_renter + pop_dens +
+                  Region_Northeast + Region_South + Region_West,
+                data = df_filtered)
+
+coefficient <- coef(model_ori)["if_lower_grade"]
+ci <- confint(model_ori, "if_lower_grade")
+print(paste(round(coefficient, digits = 2), 
+            " (", round(ci[1], digits = 2), 
+            ", ", round(ci[2], digits = 2), ")", sep = ""))
+
+# 2.2 For Grade B and C; Obesity
+df_filtered <- redline[redline$holc_grade %in% c("B", "C"), ]
+df_filtered$if_lower_grade <- ifelse(df_filtered$holc_grade == "C", 1, 0)
+
+print(nrow(df_filtered))
+
+# Crude model
+model_ori <- lm(obesity ~ if_lower_grade, data = df_filtered)
+
+model_data <- model.frame(model_ori)
+lower_grade_rows_in_model <- model_data[model_data$if_lower_grade == 1, ]
+print(paste("Total number of rows: ", nobs(model_ori)))
+
+coefficient <- coef(model_ori)["if_lower_grade"]
+ci <- confint(model_ori, "if_lower_grade")
+print(paste(round(coefficient, digits = 2), 
+            " (", round(ci[1], digits = 2), 
+            ", ", round(ci[2], digits = 2), ")", sep = ""))
+
+# Model controlling for regions
+model_ori <- lm(obesity ~ if_lower_grade + 
+                  Region_Northeast + Region_South + Region_West,
+                data = df_filtered)
+
+coefficient <- coef(model_ori)["if_lower_grade"]
+ci <- confint(model_ori, "if_lower_grade")
+print(paste(round(coefficient, digits = 2), 
+            " (", round(ci[1], digits = 2), 
+            ", ", round(ci[2], digits = 2), ")", sep = ""))
+
+# Model controlling for regions + SES 
+model_ori <- lm(obesity ~ if_lower_grade + 
+                  pct_nonwhite + pct_black + pct_foreign_white + 
+                  median_h_value + pct_college_above + pct_unempl + 
+                  pct_renter + pop_dens +
+                  Region_Northeast + Region_South + Region_West,
+                data = df_filtered)
+
+coefficient <- coef(model_ori)["if_lower_grade"]
+ci <- confint(model_ori, "if_lower_grade")
+print(paste(round(coefficient, digits = 2), 
+            " (", round(ci[1], digits = 2), 
+            ", ", round(ci[2], digits = 2), ")", sep = ""))
+
+# 2.3 For Grade C and D; Obesity
+df_filtered <- redline[redline$holc_grade %in% c("C", "D"), ]
+df_filtered$if_lower_grade <- ifelse(df_filtered$holc_grade == "D", 1, 0)
+
+print(nrow(df_filtered))
+
+# Crude model
+model_ori <- lm(obesity ~ if_lower_grade, data = df_filtered)
+
+model_data <- model.frame(model_ori)
+lower_grade_rows_in_model <- model_data[model_data$if_lower_grade == 1, ]
+print(paste("Total number of rows: ", nobs(model_ori)))
+
+coefficient <- coef(model_ori)["if_lower_grade"]
+ci <- confint(model_ori, "if_lower_grade")
+print(paste(round(coefficient, digits = 2), 
+            " (", round(ci[1], digits = 2), 
+            ", ", round(ci[2], digits = 2), ")", sep = ""))
+
+# Model controlling for regions
+model_ori <- lm(obesity ~ if_lower_grade + 
+                  Region_Northeast + Region_South + Region_West,
+                data = df_filtered)
+
+coefficient <- coef(model_ori)["if_lower_grade"]
+ci <- confint(model_ori, "if_lower_grade")
+print(paste(round(coefficient, digits = 2), 
+            " (", round(ci[1], digits = 2), 
+            ", ", round(ci[2], digits = 2), ")", sep = ""))
+
+# Model controlling for regions + SES 
+model_ori <- lm(obesity ~ if_lower_grade + 
+                  pct_nonwhite + pct_black + pct_foreign_white + 
+                  median_h_value + pct_college_above + pct_unempl + 
+                  pct_renter + pop_dens +
+                  Region_Northeast + Region_South + Region_West,
+                data = df_filtered)
+
+coefficient <- coef(model_ori)["if_lower_grade"]
+ci <- confint(model_ori, "if_lower_grade")
+print(paste(round(coefficient, digits = 2), 
+            " (", round(ci[1], digits = 2), 
+            ", ", round(ci[2], digits = 2), ")", sep = ""))
+
+#############################
+# 3. IPW for Table 4.
+
+# For A and B
+df <- redline[redline$holc_grade %in% c("B", "A"), ]
+df$if_lower_grade <- ifelse(df$holc_grade == "B", 1, 0)
+
+print(nrow(df))
+
+ps_model <- glm(if_lower_grade ~ pct_nonwhite + pct_black + pct_foreign_white + 
+                  median_h_value + pct_college_above + pct_unempl + 
+                  pct_renter + pop_dens +
+                  Region_Northeast + Region_South + Region_West, 
+                data = df, 
+                family = binomial(link = "logit"))
+
+df$propensity_score <- predict(ps_model, type = "response")
+
+# Remove <2.5% and >97.5% percentile of probabilities 
+lower_bound <- quantile(df$propensity_score, 0.025)
+upper_bound <- quantile(df$propensity_score, 0.975)
+
+df_filtered <- df %>%
+  filter(propensity_score > lower_bound & propensity_score < upper_bound)
+
+print(nrow(df))
+print(nrow(df_filtered))
+print(nrow(df_filtered[df_filtered$if_lower_grade == 1, ]))
+
+df_filtered$ipw <- ifelse(df_filtered$if_lower_grade == 1, 1 / df_filtered$propensity_score, 1 / (1 - df_filtered$propensity_score))
+
+fit <- survey::svyglm(obesity ~ if_lower_grade, design = survey::svydesign(ids = ~1, data = df_filtered, weights = df_filtered$ipw))
+coefficient2 <- coef(fit)["if_lower_grade"]
+ci <- confint(fit, "if_lower_grade")
+print(paste(round(coefficient2, digits = 2), 
+            " (", round(ci[1], digits = 2), 
+            ", ", round(ci[2], digits = 2), ")", sep = ""))
+
+fit <- survey::svyglm(bphigh ~ if_lower_grade, design = survey::svydesign(ids = ~1, data = df_filtered, weights = df_filtered$ipw))
+coefficient2 <- coef(fit)["if_lower_grade"]
+ci <- confint(fit, "if_lower_grade")
+print(paste(round(coefficient2, digits = 2), 
+            " (", round(ci[1], digits = 2), 
+            ", ", round(ci[2], digits = 2), ")", sep = ""))
+
+fit <- survey::svyglm(diabetes ~ if_lower_grade, design = survey::svydesign(ids = ~1, data = df_filtered, weights = df_filtered$ipw))
+coefficient2 <- coef(fit)["if_lower_grade"]
+ci <- confint(fit, "if_lower_grade")
+print(paste(round(coefficient2, digits = 2), 
+            " (", round(ci[1], digits = 2), 
+            ", ", round(ci[2], digits = 2), ")", sep = ""))
+
+
+# For B and C
+df <- redline[redline$holc_grade %in% c("B", "C"), ]
+df$if_lower_grade <- ifelse(df$holc_grade == "C", 1, 0)
+
+print(nrow(df))
+
+ps_model <- glm(if_lower_grade ~ pct_nonwhite + pct_black + pct_foreign_white + 
+                  median_h_value + pct_college_above + pct_unempl + 
+                  pct_renter + pop_dens +
+                  Region_Northeast + Region_South + Region_West, 
+                data = df, 
+                family = binomial(link = "logit"))
+
+df$propensity_score <- predict(ps_model, type = "response")
+
+# Remove <2.5% and >97.5% percentile of probabilities 
+lower_bound <- quantile(df$propensity_score, 0.025)
+upper_bound <- quantile(df$propensity_score, 0.975)
+
+df_filtered <- df %>%
+  filter(propensity_score > lower_bound & propensity_score < upper_bound)
+
+print(nrow(df))
+print(nrow(df_filtered))
+print(nrow(df_filtered[df_filtered$if_lower_grade == 1, ]))
+
+df_filtered$ipw <- ifelse(df_filtered$if_lower_grade == 1, 1 / df_filtered$propensity_score, 1 / (1 - df_filtered$propensity_score))
+
+fit <- survey::svyglm(obesity ~ if_lower_grade, design = survey::svydesign(ids = ~1, data = df_filtered, weights = df_filtered$ipw))
+coefficient2 <- coef(fit)["if_lower_grade"]
+ci <- confint(fit, "if_lower_grade")
+print(paste(round(coefficient2, digits = 2), 
+            " (", round(ci[1], digits = 2), 
+            ", ", round(ci[2], digits = 2), ")", sep = ""))
+
+fit <- survey::svyglm(bphigh ~ if_lower_grade, design = survey::svydesign(ids = ~1, data = df_filtered, weights = df_filtered$ipw))
+coefficient2 <- coef(fit)["if_lower_grade"]
+ci <- confint(fit, "if_lower_grade")
+print(paste(round(coefficient2, digits = 2), 
+            " (", round(ci[1], digits = 2), 
+            ", ", round(ci[2], digits = 2), ")", sep = ""))
+
+fit <- survey::svyglm(diabetes ~ if_lower_grade, design = survey::svydesign(ids = ~1, data = df_filtered, weights = df_filtered$ipw))
+coefficient2 <- coef(fit)["if_lower_grade"]
+ci <- confint(fit, "if_lower_grade")
+print(paste(round(coefficient2, digits = 2), 
+            " (", round(ci[1], digits = 2), 
+            ", ", round(ci[2], digits = 2), ")", sep = ""))
+
+# For C and D
+df <- redline[redline$holc_grade %in% c("C", "D"), ]
+df$if_lower_grade <- ifelse(df$holc_grade == "D", 1, 0)
+
+print(nrow(df))
+
+ps_model <- glm(if_lower_grade ~ pct_nonwhite + pct_black + pct_foreign_white + 
+                  median_h_value + pct_college_above + pct_unempl + 
+                  pct_renter + pop_dens +
+                  Region_Northeast + Region_South + Region_West, 
+                data = df, 
+                family = binomial(link = "logit"))
+
+df$propensity_score <- predict(ps_model, type = "response")
+
+# Remove <2.5% and >97.5% percentile of probabilities 
+lower_bound <- quantile(df$propensity_score, 0.025)
+upper_bound <- quantile(df$propensity_score, 0.975)
+
+df_filtered <- df %>%
+  filter(propensity_score > lower_bound & propensity_score < upper_bound)
+
+print(nrow(df))
+print(nrow(df_filtered))
+print(nrow(df_filtered[df_filtered$if_lower_grade == 1, ]))
+
+df_filtered$ipw <- ifelse(df_filtered$if_lower_grade == 1, 1 / df_filtered$propensity_score, 1 / (1 - df_filtered$propensity_score))
+
+fit <- survey::svyglm(obesity ~ if_lower_grade, design = survey::svydesign(ids = ~1, data = df_filtered, weights = df_filtered$ipw))
+coefficient2 <- coef(fit)["if_lower_grade"]
+ci <- confint(fit, "if_lower_grade")
+print(paste(round(coefficient2, digits = 2), 
+            " (", round(ci[1], digits = 2), 
+            ", ", round(ci[2], digits = 2), ")", sep = ""))
+
+fit <- survey::svyglm(bphigh ~ if_lower_grade, design = survey::svydesign(ids = ~1, data = df_filtered, weights = df_filtered$ipw))
+coefficient2 <- coef(fit)["if_lower_grade"]
+ci <- confint(fit, "if_lower_grade")
+print(paste(round(coefficient2, digits = 2), 
+            " (", round(ci[1], digits = 2), 
+            ", ", round(ci[2], digits = 2), ")", sep = ""))
+
+fit <- survey::svyglm(diabetes ~ if_lower_grade, design = survey::svydesign(ids = ~1, data = df_filtered, weights = df_filtered$ipw))
+coefficient2 <- coef(fit)["if_lower_grade"]
+ci <- confint(fit, "if_lower_grade")
+print(paste(round(coefficient2, digits = 2), 
+            " (", round(ci[1], digits = 2), 
+            ", ", round(ci[2], digits = 2), ")", sep = ""))
+
+#############################
+# 4. PS matching for Table S4.
+# For A and B.
+df_filtered <- redline[redline$holc_grade %in% c("B", "A"), ]
+df_filtered$if_lower_grade <- ifelse(df_filtered$holc_grade == "B", 1, 0)
+
+ps_model <- glm(if_lower_grade ~ pct_nonwhite + pct_black + pct_foreign_white + 
+                  median_h_value + pct_college_above + pct_unempl + 
+                  pct_renter + pop_dens +
+                  Region_Northeast + Region_South + Region_West, 
+                data = df_filtered, 
+                family = binomial(link = "logit"))
+
+df_filtered$propensity_score <- predict(ps_model, type = "response")
+
+ggplot(df_filtered, aes(x = propensity_score, fill = as.factor(if_lower_grade))) +
+  geom_density(alpha = 0.5) +
+  labs(x = "Propensity Score", y = "Density", 
+       fill = "Treatment Status", title = "Propensity Score Distribution by Grade C and Grade D") +
+  scale_fill_discrete(labels = c("Control", "Treated (Lower grade)")) +
+  theme_minimal()
+
+matching_model <- matchit(if_lower_grade ~ pct_nonwhite + pct_black + pct_foreign_white + 
+                            median_h_value + pct_college_above + pct_unempl + 
+                            pct_renter + pop_dens +
+                            Region_Northeast + Region_South + Region_West,
+                          data = df_filtered, 
+                          method = "full", 
+                          distance = df_filtered$propensity_score, 
+                          link = "logit",
+                          estimand = 'ATE')
+
+matching_model.data = match.data(matching_model)
+
+# diabetes
+model_matched <- lm(diabetes ~ if_lower_grade, 
+                    data = matching_model.data,
+                    weights = weights)
+
+print(paste("Total number of rows: ", nobs(model_matched)))
+
+testcoef = lmtest::coeftest(model_matched, vcov. = sandwich::vcovCL, cluster = ~subclass)
+coefficient <- coef(testcoef)["if_lower_grade"]
+ci <- confint(testcoef, "if_lower_grade")
+print(paste(round(coefficient, digits = 2), 
+            " (", round(ci[1], digits = 2), 
+            ", ", round(ci[2], digits = 2), ")", sep = ""))
+
+# obesity
+model_matched <- lm(obesity ~ if_lower_grade, 
+                    data = matching_model.data,
+                    weights = weights)
+
+print(paste("Total number of rows: ", nobs(model_matched)))
+
+testcoef = lmtest::coeftest(model_matched, vcov. = sandwich::vcovCL, cluster = ~subclass)
+coefficient <- coef(testcoef)["if_lower_grade"]
+ci <- confint(testcoef, "if_lower_grade")
+print(paste(round(coefficient, digits = 2), 
+            " (", round(ci[1], digits = 2), 
+            ", ", round(ci[2], digits = 2), ")", sep = ""))
+
+# hypertension
+model_matched <- lm(bphigh ~ if_lower_grade, 
+                    data = matching_model.data,
+                    weights = weights)
+
+print(paste("Total number of rows: ", nobs(model_matched)))
+
+testcoef = lmtest::coeftest(model_matched, vcov. = sandwich::vcovCL, cluster = ~subclass)
+coefficient <- coef(testcoef)["if_lower_grade"]
+ci <- confint(testcoef, "if_lower_grade")
+print(paste(round(coefficient, digits = 2), 
+            " (", round(ci[1], digits = 2), 
+            ", ", round(ci[2], digits = 2), ")", sep = ""))
+
+
+# For B and C.
+df_filtered <- redline[redline$holc_grade %in% c("B", "C"), ]
+df_filtered$if_lower_grade <- ifelse(df_filtered$holc_grade == "C", 1, 0)
+
+ps_model <- glm(if_lower_grade ~ pct_nonwhite + pct_black + pct_foreign_white + 
+                  median_h_value + pct_college_above + pct_unempl + 
+                  pct_renter + pop_dens +
+                  Region_Northeast + Region_South + Region_West, 
+                data = df_filtered, 
+                family = binomial(link = "logit"))
+
+df_filtered$propensity_score <- predict(ps_model, type = "response")
+
+ggplot(df_filtered, aes(x = propensity_score, fill = as.factor(if_lower_grade))) +
+  geom_density(alpha = 0.5) +
+  labs(x = "Propensity Score", y = "Density", 
+       fill = "Treatment Status", title = "Propensity Score Distribution by Grade C and Grade D") +
+  scale_fill_discrete(labels = c("Control", "Treated (Lower grade)")) +
+  theme_minimal()
+
+matching_model <- matchit(if_lower_grade ~ pct_nonwhite + pct_black + pct_foreign_white + 
+                            median_h_value + pct_college_above + pct_unempl + 
+                            pct_renter + pop_dens +
+                            Region_Northeast + Region_South + Region_West,
+                          data = df_filtered, 
+                          method = "full", 
+                          distance = df_filtered$propensity_score, 
+                          link = "logit",
+                          estimand = 'ATE')
+
+matching_model.data = match.data(matching_model)
+
+# diabetes
+model_matched <- lm(diabetes ~ if_lower_grade, 
+                    data = matching_model.data,
+                    weights = weights)
+
+print(paste("Total number of rows: ", nobs(model_matched)))
+
+testcoef = lmtest::coeftest(model_matched, vcov. = sandwich::vcovCL, cluster = ~subclass)
+coefficient <- coef(testcoef)["if_lower_grade"]
+ci <- confint(testcoef, "if_lower_grade")
+print(paste(round(coefficient, digits = 2), 
+            " (", round(ci[1], digits = 2), 
+            ", ", round(ci[2], digits = 2), ")", sep = ""))
+
+# obesity
+model_matched <- lm(obesity ~ if_lower_grade, 
+                    data = matching_model.data,
+                    weights = weights)
+
+print(paste("Total number of rows: ", nobs(model_matched)))
+
+testcoef = lmtest::coeftest(model_matched, vcov. = sandwich::vcovCL, cluster = ~subclass)
+coefficient <- coef(testcoef)["if_lower_grade"]
+ci <- confint(testcoef, "if_lower_grade")
+print(paste(round(coefficient, digits = 2), 
+            " (", round(ci[1], digits = 2), 
+            ", ", round(ci[2], digits = 2), ")", sep = ""))
+
+# hypertension
+model_matched <- lm(bphigh ~ if_lower_grade, 
+                    data = matching_model.data,
+                    weights = weights)
+
+print(paste("Total number of rows: ", nobs(model_matched)))
+
+testcoef = lmtest::coeftest(model_matched, vcov. = sandwich::vcovCL, cluster = ~subclass)
+coefficient <- coef(testcoef)["if_lower_grade"]
+ci <- confint(testcoef, "if_lower_grade")
+print(paste(round(coefficient, digits = 2), 
+            " (", round(ci[1], digits = 2), 
+            ", ", round(ci[2], digits = 2), ")", sep = ""))
+
+
+
+# For C and D.
+df_filtered <- redline[redline$holc_grade %in% c("D", "C"), ]
+df_filtered$if_lower_grade <- ifelse(df_filtered$holc_grade == "D", 1, 0)
+
+ps_model <- glm(if_lower_grade ~ pct_nonwhite + pct_black + pct_foreign_white + 
+                  median_h_value + pct_college_above + pct_unempl + 
+                  pct_renter + pop_dens +
+                  Region_Northeast + Region_South + Region_West, 
+                data = df_filtered, 
+                family = binomial(link = "logit"))
+
+df_filtered$propensity_score <- predict(ps_model, type = "response")
+
+ggplot(df_filtered, aes(x = propensity_score, fill = as.factor(if_lower_grade))) +
+  geom_density(alpha = 0.5) +
+  labs(x = "Propensity Score", y = "Density", 
+       fill = "Treatment Status", title = "Propensity Score Distribution by Grade C and Grade D") +
+  scale_fill_discrete(labels = c("Control", "Treated (Lower grade)")) +
+  theme_minimal()
+
+matching_model <- matchit(if_lower_grade ~ pct_nonwhite + pct_black + pct_foreign_white + 
+                            median_h_value + pct_college_above + pct_unempl + 
+                            pct_renter + pop_dens +
+                            Region_Northeast + Region_South + Region_West,
+                          data = df_filtered, 
+                          method = "full", 
+                          distance = df_filtered$propensity_score, 
+                          link = "logit",
+                          estimand = 'ATE')
+
+matching_model.data = match.data(matching_model)
+
+# diabetes
+model_matched <- lm(diabetes ~ if_lower_grade, 
+                    data = matching_model.data,
+                    weights = weights)
+
+print(paste("Total number of rows: ", nobs(model_matched)))
+
+testcoef = lmtest::coeftest(model_matched, vcov. = sandwich::vcovCL, cluster = ~subclass)
+coefficient <- coef(testcoef)["if_lower_grade"]
+ci <- confint(testcoef, "if_lower_grade")
+print(paste(round(coefficient, digits = 2), 
+            " (", round(ci[1], digits = 2), 
+            ", ", round(ci[2], digits = 2), ")", sep = ""))
+
+# obesity
+model_matched <- lm(obesity ~ if_lower_grade, 
+                    data = matching_model.data,
+                    weights = weights)
+
+print(paste("Total number of rows: ", nobs(model_matched)))
+
+testcoef = lmtest::coeftest(model_matched, vcov. = sandwich::vcovCL, cluster = ~subclass)
+coefficient <- coef(testcoef)["if_lower_grade"]
+ci <- confint(testcoef, "if_lower_grade")
+print(paste(round(coefficient, digits = 2), 
+            " (", round(ci[1], digits = 2), 
+            ", ", round(ci[2], digits = 2), ")", sep = ""))
+
+# hypertension
+model_matched <- lm(bphigh ~ if_lower_grade, 
+                    data = matching_model.data,
+                    weights = weights)
+
+print(paste("Total number of rows: ", nobs(model_matched)))
+
+testcoef = lmtest::coeftest(model_matched, vcov. = sandwich::vcovCL, cluster = ~subclass)
+coefficient <- coef(testcoef)["if_lower_grade"]
+ci <- confint(testcoef, "if_lower_grade")
+print(paste(round(coefficient, digits = 2), 
+            " (", round(ci[1], digits = 2), 
+            ", ", round(ci[2], digits = 2), ")", sep = ""))
+
