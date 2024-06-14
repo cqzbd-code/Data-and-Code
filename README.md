@@ -1,7 +1,4 @@
 # Data-and-Code
-**Maintainer:** Hanxue Wei
-
-**Authors:** Hanxue Wei, Benjamin R. Spoer, Andrea R. Titus, Taylor M. Lampe, Marc N. Gourevitch, Jacob W. Faber, Steven J. Korzeniewski, Samantha J. Bauer, Lorna E. Thorpe
 
 **Datasets:**
 
@@ -22,7 +19,3 @@
 `Data Processing.ipynb` This file includes Python source code for processing primary datasets and generating the final dataset for analysis.
 
 `R Code.txt` This file contains the R source code used for statistical analysis.
-
-
-**Contact:** 
-Lorna Thorpe (Lorna.Thorpe@nyulangone.org)
